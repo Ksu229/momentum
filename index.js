@@ -1,8 +1,8 @@
+const body = document.querySelector('body');
 const time = document.querySelector('.time');
 const date = document.querySelector('.date');
 const greeting = document.querySelector('.greeting');
 const name = document.querySelector('.name');
-const body = document.querySelector('body');
 const weatherIcon = document.querySelector('.weather-icon');
 const temperature = document.querySelector('.temperature');
 const weatherDescription = document.querySelector('.weather-description');
@@ -12,6 +12,19 @@ const city = document.querySelector('.city');
 const quote = document.querySelector('.quote');
 const author = document.querySelector('.author');
 const changeQuote = document.querySelector('.change-quote');
+const audio = new Audio(); 
+const playpauseBtn = document.getElementById('play-button');
+const plPrev = document.querySelector('.play-prev');
+const plNext = document.querySelector('.play-next');
+const li = document.createElement('li');
+const li1 = document.createElement('li');
+const li2 = document.createElement('li');
+const li3 = document.createElement('li');
+const slidePrev = document.querySelector('.slide-prev');
+const slideNext = document.querySelector('.slide-next');
+const ul = document.querySelector('.play-list');
+// let randomNum;
+let isPlay = false;
 
 function showDate () {
     const date1 = new Date();
@@ -70,22 +83,46 @@ function getRandomNum(min, max) {
     max = Math.floor(max);
     return Math.floor(Math.random() * (max - min + 1)) + min;
 }
-//body.style.backgroundImage = "url('https://github.com/Ksu229/img_for_momentum/blob/assets/images/afternoon/03.jpg')";
 
+let randomNum = getRandomNum(1, 20);
 function setBg() {
-    const randomNum = getRandomNum(1, 20);
-    bgNum = String(randomNum).padStart(2, '0');
-    console.log(bgNum);
+    let timeOfDay = getTimeOfDay();
+    let bgNum = String(randomNum).padStart(2, '0');
+    let resUrl = `https://raw.githubusercontent.com/Ksu229/stage_1_tasks/assets/images/${timeOfDay}/${bgNum}.jpg`;
     const img = new Image();
-    const url = `https://github.com/Ksu229/img_for_momentum/blob/assets/images/${timeOfDay}/${bgNum}.jpg`;
-    console.log(url);
-    img.src = url;
+    img.src = resUrl;
     img.onload = () => {
-        return body.style.backgroundImage = `url(${url})`;
+        return body.style.backgroundImage = `url(${resUrl})`;
     }
-    //body.style.backgroundImage = `https://github.com/Ksu229/img_for_momentum/blob/assets/images/${timeOfDay}/${bgNum}.jpg`;
 }
+
 setBg();
+
+function getslideNext() {
+    if (randomNum >= 20) {
+        randomNum = 1;
+    } else {
+        randomNum++;
+    }
+    setBg();
+}
+
+slideNext.addEventListener('click', (event) => {
+    getslideNext()
+})
+
+function getslidePrev() {
+    if (randomNum === 1) {
+        randomNum = 20;
+    } else {
+        randomNum--;
+    }
+    setBg();
+}
+
+slidePrev.addEventListener('click', (event) => {
+    getslidePrev()
+})
 
 city.addEventListener('change', (event) => {
     getWeather(city.value);
@@ -120,3 +157,81 @@ getQuotes();
 changeQuote.addEventListener('click', (event) => {
 getQuotes()
 })
+
+import playList from './playList.js';
+console.log(playList);
+
+let playNum = 0;
+function playAudio() {
+    if (isPlay === false) {
+    audio.src = playList[playNum].src;
+    audio.currentTime = 0;
+    audio.play();
+    isPlay = true;
+    } else {
+    audio.pause();
+    isPlay = false;
+    }
+}
+
+playpauseBtn.addEventListener('click', (event) => {
+playAudio();
+})
+
+function toggleBtn () {
+    playpauseBtn.classList.toggle('pause');
+}
+playpauseBtn.addEventListener('click', toggleBtn);
+
+function playNext() {
+    playpauseBtn.classList.remove('pause');
+    if (playNum >= 3) {
+        playNum = 0;
+    } else {
+        playNum++;
+    }
+    playAudio()
+}
+plNext.addEventListener('click', (event) => {
+    playNext()
+})
+
+function playPrev() {
+    playpauseBtn.classList.remove('pause');
+    if (playNum === 0) {
+        playNum = 3;
+    } else {
+        playNum--;
+    }
+    playAudio()
+}
+plPrev.addEventListener('click', (event) => {
+    playPrev()
+})
+
+// playList.forEach((index) => {
+//     console.log(playList);
+//     li.classList.add('play-item');
+//     li.textContent = playList.title;
+//     ul.append(li)
+// // });
+
+// for (let i = 0; i < playList.length; i++) {
+//     li.classList.add('play-item');
+//     li.textContent = playList[i].title;
+//     ul.append(li);
+// }
+
+li.classList.add('play-item');
+li.textContent = playList[0].title;
+ul.append(li);
+li1.classList.add('play-item');
+li1.textContent = playList[1].title;
+ul.append(li1);
+li2.classList.add('play-item');
+li2.textContent = playList[2].title;
+ul.append(li2);
+li3.classList.add('play-item');
+li3.textContent = playList[3].title;
+ul.append(li3);
+
